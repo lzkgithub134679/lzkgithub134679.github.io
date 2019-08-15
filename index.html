@@ -213,6 +213,59 @@
 
 <div class="post-preview">
 
+    <a href="/2019/08/15/as/">
+        <h2 class="post-title">
+            在项目启动后自动执行方法
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            SpringBoot的ApplicationRunner接口分别为CommandLineRunner和ApplicationRunner。他们的执行时机为容器启动完成的时候。
+123456789@Configurationpublic void run(ApplicationArguments args) throws Exception &#123;		logger.info("正在连接 ......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by lizhikang on
+            2019-08-15
+        </p>
+        <div class="tags">
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2019/07/23/JDK1-8te/">
+        <h2 class="post-title">
+            JDK1.8te
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            ...
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by lizhikang on
+            2019-07-23
+        </p>
+        <div class="tags">
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/2019/07/02/guanli/">
         <h2 class="post-title">
             10个后台控制面板
@@ -351,13 +404,11 @@ Github 地址：https://github.com/PanJiaChen/vue-......
             
         </h3>
         <div class="post-content-preview">
-            canal基于数据库增量日志解析，提供增量数据订阅&amp;消费，目前主要支持了mysql
+            canal基于数据库增量日志解析，提供增量数据订阅&amp;消费，目前主要支持了mysql 。canal的原理是基于mysql binlog技术，所以这里一定需要开启mysql的binlog写入功能，并且配置binlog模式为row. 
 一、下载安装并运行canal服务端
 1.下载
 https://github.com/alibaba/canal/releases   
-例:canal.deployer-1.1.3.tar.gz
-2.解压并打开conf/example/instance.properties进行配置
-123456789......
+例:canal.de......
         </div>
     </a>
     
@@ -481,90 +532,16 @@ map根据key倒序排序
 </div>
 <hr>
 
-<div class="post-preview">
-
-    <a href="/2019/06/04/ms/">
-        <h2 class="post-title">
-            java编程思想
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            上帝赋予人类说话的能力，而言语又创造了思想，思想是人类对宇宙的量度。
-面向对象的设计方式:
-
-万物皆对象
-程序是对象的集合，它们通过发送消息来告知彼此应该做的
-每个对象都有自己的由其他对象构成的存储
-每个对象都有其类型
-某一特定类型的所有对象都可以接受同样的消息
-
-...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2019-06-04
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#读书笔记" title="读书笔记">读书笔记</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/2017/03/18/hexo-theme-beantech/">
-        <h2 class="post-title">
-            [Hexo] Theme BeanTech
-        </h2>
-        <h3 class="post-subtitle">
-            This is hexo theme Demo.
-        </h3>
-        <div class="post-content-preview">
-            
-Ported Theme of Hux Blog, Thank Huxpro for designing such a flawless theme.
-This BeanTech theme created by YuHsuan modified from the original Porter Kaijun
-
-Live Demo
-
-Usage
-I publish the whole pr......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2017-03-18
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#Hexo" title="Hexo">Hexo</a>
-            
-              <a href="/tags/#Blog" title="Blog">Blog</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
 
 
 <!-- Pager -->
 
 <ul class="pager">
     
+    
+        <li class="next">
+            <a href="/archives/2/">Older Posts &rarr;</a>
+        </li>
     
 </ul>
 
@@ -599,13 +576,13 @@ I publish the whole pr......
             
         
             
+        
+            
+        
+            
+        
+            
             <a href="/tags/#读书笔记" title="读书笔记" rel="2">读书笔记</a>
-            
-        
-            
-        
-            
-        
             
         
             
@@ -686,6 +663,14 @@ I publish the whole pr......
     <ul>
       
         <li>
+          <a href="/2019/08/15/as/">在项目启动后自动执行方法</a>
+        </li>
+      
+        <li>
+          <a href="/2019/07/23/JDK1-8te/">JDK1.8te</a>
+        </li>
+      
+        <li>
           <a href="/2019/07/02/guanli/">10个后台控制面板</a>
         </li>
       
@@ -695,14 +680,6 @@ I publish the whole pr......
       
         <li>
           <a href="/2019/06/28/custom-annotations/">java 自定义注解的学习和使用</a>
-        </li>
-      
-        <li>
-          <a href="/2019/06/26/advancedCanal/">canal进阶，和springBoot整合,实现注解异步更新redis</a>
-        </li>
-      
-        <li>
-          <a href="/2019/06/26/canal/">canal的快速搭建，和redis异步更新</a>
         </li>
       
     </ul>
