@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content>
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Map/Reduce 及Java8的Function和Stream - Lzk Bolg
+        
+    </title>
+
+    <link rel="canonical" href="http://lzk123.xyz/2019/11/13/java8Function/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('Demo.png')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/123.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Show All" title="Show All">Show All</a>
+                            
+                              <a class="tag" href="/tags/#idea" title="idea">idea</a>
+                            
+                        </div>
+                        <h1>Map/Reduce 及Java8的Function和Stream</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by lizhikang on
+                            2019-11-13
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Lzk Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h4 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h4><p>主要介绍Map/Reduce的提出和意义 及其在Java中的运用。结合Java8的Lambda表达式、函数式编程、Stream流式操作、Fork/Join框架来阐述其操作。</p>
+<h4 id="Map-Reduce的概念"><a href="#Map-Reduce的概念" class="headerlink" title="Map/Reduce的概念"></a>Map/Reduce的概念</h4><p>Map/Reduce起源于Google关于大数据的三篇论文之一的“MapReduce: Simplified Data Processing on Large Clusters”，用于海量数据分布在不同机器上的情况下的并行运算的一种编程模型。<br>Map意为映射，Reduce意为归约。</p>
+<p>数学上讲，Map/Reduce用于集合操作，假设有一个集合list=[X1,X2,X3,,,Xn]。<br>Map即为对list集合中的每一个元素进行Y=f(X)的操作后变为一个新的集合list2=[Y1,Y2,Y3,,,Yn]。<br>Reduce意为执行g(g(g(g(X1),X2),X3)…Xn)这样一个函数后的的结果值。</p>
+<p>大白话讲，对集合中的每一个元素执行同一个操作，就是Map；对集合中的所有元素进行归一操作，就是Reduce。</p>
+<h6 id="tips：这里的Map-Reduce概念的阐述有点狭隘和不准确，目的是以Java代码的角度理解为主。"><a href="#tips：这里的Map-Reduce概念的阐述有点狭隘和不准确，目的是以Java代码的角度理解为主。" class="headerlink" title="tips：这里的Map/Reduce概念的阐述有点狭隘和不准确，目的是以Java代码的角度理解为主。"></a>tips：这里的Map/Reduce概念的阐述有点狭隘和不准确，目的是以Java代码的角度理解为主。</h6><h4 id="Java中的Lambda表达式"><a href="#Java中的Lambda表达式" class="headerlink" title="Java中的Lambda表达式"></a>Java中的Lambda表达式</h4><p>Java8中开始引入Lambda表达式语法，方便进行函数式编程开发。<br>eg:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">People</span> </span>&#123;</span><br><span class="line">    <span class="function">String <span class="title">getName</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ManyPeople</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">view</span><span class="params">(People people)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">People person1 = () -&gt; <span class="string">"a"</span>; <span class="comment">// 1</span></span><br><span class="line">People person2 = () -&gt; &#123; <span class="keyword">return</span> <span class="string">"b"</span>; &#125;; <span class="comment">// 2</span></span><br><span class="line"></span><br><span class="line">ManyPeople manyPeople1 = people -&gt; people.getName(); <span class="comment">// 3</span></span><br><span class="line">ManyPeople manyPeople2 = (People people) -&gt; people.getName(); <span class="comment">// 4</span></span><br><span class="line"></span><br><span class="line">BinaryOperator&lt;Integer&gt; maxBy = (Integer a, Integer b) -&gt; a &gt; b ? a : b; <span class="comment">// 5</span></span><br><span class="line">BinaryOperator&lt;Integer&gt; minBy = (a, b) -&gt; a &lt; b ? a : b; <span class="comment">// 6</span></span><br><span class="line"></span><br><span class="line">UnaryOperator&lt;People&gt; identify = t -&gt; t; <span class="comment">// 7</span></span><br></pre></td></tr></table></figure>
+<p>小结：<br>1，Lambda表达式可以看做是匿名内部类的语法糖；<br>2，目标接口只能有一个未实现的方法；（默认方法不影响）<br>3，-&gt; 后的返回值可以是简单的值，也可以是复杂的代码块； eg: 1,2<br>4，接口无参的话，-&gt; 前需要()； eg: 1,2<br>5，接口有参的话，-&gt; 前的()内标出方法参数； eg: 4,6<br>6，接口只有一个参数的话，-&gt; 前的()可以省略； eg: 3,7<br>7，-&gt; 前的()内的接口的参数的类型可以不写； eg： 6<br>8，具有泛型类型推断的功能； eg：5，6</p>
+<h4 id="方法的引用"><a href="#方法的引用" class="headerlink" title="方法的引用"></a>方法的引用</h4><p>Java8开始，可以以函数式的方式引用方法。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Fucntion接口的方法名叫做apply，但是依然可以引用。（极大的方便）</span></span><br><span class="line">Function&lt;String, Integer&gt; converter = Integer::valueOf; <span class="comment">// 类的方法</span></span><br><span class="line">还可以是：</span><br><span class="line">Integer::<span class="keyword">new</span>; <span class="comment">// 构造方法</span></span><br><span class="line">list::add; <span class="comment">// 某个对象的方法</span></span><br><span class="line">Integer::sum; <span class="comment">// 静态方法</span></span><br></pre></td></tr></table></figure></p>
+<p>方法的引用天然支持类型推断。</p>
+<h4 id="Java中的函数式"><a href="#Java中的函数式" class="headerlink" title="Java中的函数式"></a>Java中的函数式</h4><p>主要是java.util.function包里的接口 和 java.util.stream包里的接口及实现类。<br>java.util.function包下的主要接口：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Consumer</span>&lt;<span class="title">T</span>&gt; </span>&#123; <span class="comment">// Stream.forEach()</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">accept</span><span class="params">(T t)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Function</span>&lt;<span class="title">T</span>, <span class="title">R</span>&gt; </span>&#123; <span class="comment">// Stream.map()</span></span><br><span class="line">    <span class="function">R <span class="title">apply</span><span class="params">(T t)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Predicate</span>&lt;<span class="title">T</span>&gt; </span>&#123; <span class="comment">// Stream.filter()</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">test</span><span class="params">(T t)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Supplier</span>&lt;<span class="title">T</span>&gt; </span>&#123; <span class="comment">// Stream.collect()</span></span><br><span class="line">    <span class="function">T <span class="title">get</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该报下Bi开头表示两元素类型的函数接口。比如<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BiConsumer</span>&lt;<span class="title">T</span>, <span class="title">U</span>&gt;</span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">accept</span><span class="params">(T t, U u)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该报下其他如DoubleXxx、IntXxx、ObjXxx、LongXxx是特定的类型的函数接口。</p>
+<p>java.util.stream包下的主要接口：<br>Stream接口的主要方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 过滤</span></span><br><span class="line"><span class="function">Stream&lt;T&gt; <span class="title">filter</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate)</span></span>;</span><br><span class="line"><span class="comment">// 映射</span></span><br><span class="line">&lt;R&gt; <span class="function">Stream&lt;R&gt; <span class="title">map</span><span class="params">(Function&lt;? <span class="keyword">super</span> T, ? extends R&gt; mapper)</span></span>;</span><br><span class="line"><span class="comment">// 平铺映射</span></span><br><span class="line">&lt;R&gt; <span class="function">Stream&lt;R&gt; <span class="title">flatMap</span><span class="params">(Function&lt;? <span class="keyword">super</span> T, ? extends Stream&lt;? extends R&gt;&gt; mapper)</span></span>;</span><br><span class="line"><span class="comment">// 根据equals方法去重</span></span><br><span class="line"><span class="function">Stream&lt;T&gt; <span class="title">distinct</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 排序</span></span><br><span class="line"><span class="function">Stream&lt;T&gt; <span class="title">sorted</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator)</span></span>;</span><br><span class="line"><span class="comment">// 过程中遍历</span></span><br><span class="line"><span class="function">Stream&lt;T&gt; <span class="title">peek</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span></span>;</span><br><span class="line"><span class="comment">// 从后面去掉一部分元素</span></span><br><span class="line"><span class="function">Stream&lt;T&gt; <span class="title">limit</span><span class="params">(<span class="keyword">long</span> maxSize)</span></span>;</span><br><span class="line"><span class="comment">// 从前面去掉一部分元素</span></span><br><span class="line"><span class="function">Stream&lt;T&gt; <span class="title">skip</span><span class="params">(<span class="keyword">long</span> n)</span></span>;</span><br><span class="line"><span class="comment">// 遍历</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span></span>;</span><br><span class="line"><span class="comment">// 转数组</span></span><br><span class="line">&lt;A&gt; A[] toArray(IntFunction&lt;A[]&gt; generator);</span><br><span class="line"><span class="comment">// 最小值</span></span><br><span class="line"><span class="function">Optional&lt;T&gt; <span class="title">min</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator)</span></span>;</span><br><span class="line"><span class="comment">// 最大值</span></span><br><span class="line"><span class="function">Optional&lt;T&gt; <span class="title">max</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator)</span></span>;</span><br><span class="line"><span class="comment">// 元素个数</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">count</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 只要有一个匹配就返回true</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">anyMatch</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate)</span></span>;</span><br><span class="line"><span class="comment">// 所有都匹配则返回true</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">allMatch</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate)</span></span>;</span><br><span class="line"><span class="comment">// 没有一个匹配则返回true</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">noneMatch</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate)</span></span>;</span><br><span class="line"><span class="comment">// 返回第一个元素</span></span><br><span class="line"><span class="function">Optional&lt;T&gt; <span class="title">findFirst</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 返回任意一个元素，并行是可能不同</span></span><br><span class="line"><span class="function">Optional&lt;T&gt; <span class="title">findAny</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// Reduce操作，返回值与元素值类型相同，提供初始值和reduce函数</span></span><br><span class="line"><span class="function">T <span class="title">reduce</span><span class="params">(T identity, BinaryOperator&lt;T&gt; accumulator)</span></span>;</span><br><span class="line"><span class="comment">// Reduce操作，返回值与元素值类型相同，无初始值，提供reduce函数</span></span><br><span class="line"><span class="function">Optional&lt;T&gt; <span class="title">reduce</span><span class="params">(BinaryOperator&lt;T&gt; accumulator)</span></span>;</span><br><span class="line"><span class="comment">// Reduce操作，返回值与元素值类型不同，提供初始值、reduce函数、并行时的归一函数</span></span><br><span class="line">&lt;U&gt; <span class="function">U <span class="title">reduce</span><span class="params">(U identity, BiFunction&lt;U, ? <span class="keyword">super</span> T, U&gt; accumulator,BinaryOperator&lt;U&gt; combiner)</span></span>;</span><br><span class="line"><span class="comment">// Recuce操作，利用Java封装的形式，提供初始值函数、reduce函数、并行时的归一函数</span></span><br><span class="line">&lt;R&gt; <span class="function">R <span class="title">collect</span><span class="params">(Supplier&lt;R&gt; supplier, BiConsumer&lt;R, ? <span class="keyword">super</span> T&gt; accumulator, BiConsumer&lt;R, R&gt; combiner)</span></span>;</span><br><span class="line"><span class="comment">// Recuce操作，利用Java封装的常用的Collector接口，建议从Collectors工具类返回。</span></span><br><span class="line">&lt;R, A&gt; <span class="function">R <span class="title">collect</span><span class="params">(Collector&lt;? <span class="keyword">super</span> T, A, R&gt; collector)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<h4 id="惰性执行"><a href="#惰性执行" class="headerlink" title="惰性执行"></a>惰性执行</h4><p>对stream的操作分为两种：中间操作(intermediate) 和 终级操作(terminal)。<br>中间操作在stream中不会立即执行，只有等到用户真正需要结果的时候才执行，调用中间操作只会生成一个标记该操作的新stream对象而已，称为惰性执行(lazy)。<br>在对于一个 Stream 进行多次中间操作 (Intermediate 操作)，每次都对 Stream 的每个元素进行转换，而且是执行多次，这样时间复杂度就是 N（转换次数）个 for 循环里把所有操作都做掉的总和吗？其实不是这样的，转换操作都是 lazy 的，多个转换操作只会在 Terminal 操作的时候融合起来，一次循环完成。我们可以这样简单的理解，Stream 里有个操作函数的集合，每次转换操作就是把转换函数放入这个集合中，在 Terminal 操作的时候循环 Stream 对应的集合，然后对每个元素执行所有的函数。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">中间操作：</span><br><span class="line">concat() distinct() filter() flatMap() limit() map() peek()</span><br><span class="line">skip() sorted() parallel() sequential() unordered()</span><br><span class="line">终极操作：</span><br><span class="line">allMatch() anyMatch() collect() count() findAny() findFirst()</span><br><span class="line">forEach() forEachOrdered() max() min() noneMatch() reduce() toArray()</span><br></pre></td></tr></table></figure></p>
+<h4 id="用-Collectors-来进行-reduce-操作"><a href="#用-Collectors-来进行-reduce-操作" class="headerlink" title="用 Collectors 来进行 reduce 操作"></a>用 Collectors 来进行 reduce 操作</h4><p>对stram对象执行reduce操作，调用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;U&gt; <span class="function">U <span class="title">reduce</span><span class="params">(U identity, BiFunction&lt;U, ? <span class="keyword">super</span> T, U&gt; accumulator,BinaryOperator&lt;U&gt; combiner)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>这个方法，需要传递3个参数。第一个参数是初始值，第二参数是reduce函数，第三个参数是并行运行是需要的合并函数。而对于大部分转List、Set、Map等集合的操作，都可以被封装。于是collect()就诞生了。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;R, A&gt; <span class="function">R <span class="title">collect</span><span class="params">(Collector&lt;? <span class="keyword">super</span> T, A, R&gt; collector)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>Collectors工具类中定义了很多常用的工具方法，返回特定的collector对象，用于Stream.collect()方法。常见的有：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 转List</span></span><br><span class="line">Collector&lt;T, ?, List&lt;T&gt;&gt; toList();</span><br><span class="line"><span class="comment">// 转Set</span></span><br><span class="line">Collector&lt;T, ?, Set&lt;T&gt;&gt; toSet();</span><br><span class="line"><span class="comment">// 字符串join</span></span><br><span class="line">Collector&lt;CharSequence, ?, String&gt; joining();</span><br><span class="line"><span class="comment">// 字符串join</span></span><br><span class="line">Collector&lt;CharSequence, ?, String&gt; joining(CharSequence delimiter);</span><br><span class="line"><span class="comment">// 字符串join</span></span><br><span class="line">Collector&lt;CharSequence, ?, String&gt; joining(CharSequence delimiter, CharSequence prefix, CharSequence suffix);</span><br><span class="line"><span class="comment">// 映射收集函数，经常与groupingBy()共用</span></span><br><span class="line">Collector&lt;T, ?, R&gt; mapping(Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; mapper, Collector&lt;? <span class="keyword">super</span> U, A, R&gt; downstream);</span><br><span class="line"><span class="comment">// 计数</span></span><br><span class="line">&lt;T&gt; Collector&lt;T, ?, Long&gt; counting();</span><br><span class="line"><span class="comment">// 分组，转Map，value是集合</span></span><br><span class="line">&lt;T, K&gt; Collector&lt;T, ?, Map&lt;K, List&lt;T&gt;&gt;&gt; groupingBy(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; classifier);</span><br><span class="line"><span class="comment">// 分组，转Map，Value自定义的收集函数</span></span><br><span class="line">&lt;T, K, A, D&gt; Collector&lt;T, ?, Map&lt;K, D&gt;&gt; groupingBy(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; classifier, Collector&lt;? <span class="keyword">super</span> T, A, D&gt; downstream);</span><br><span class="line"><span class="comment">// 转Map</span></span><br><span class="line">&lt;T, K, U&gt;Collector&lt;T, ?, Map&lt;K,U&gt;&gt; toMap(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; keyMapper, Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; valueMapper);</span><br><span class="line"><span class="comment">// 转Map，二分操作</span></span><br><span class="line">&lt;T&gt; Collector&lt;T, ?, Map&lt;Boolean, List&lt;T&gt;&gt;&gt; partitioningBy(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate);</span><br></pre></td></tr></table></figure></p>
+<h4 id="并行执行"><a href="#并行执行" class="headerlink" title="并行执行"></a>并行执行</h4><p>利用Java7引入的Fork/Join框架，可以利用多核cpu并行执行运算。<br>list.parallelStream()，即返回一个可以并行执行的stream对象，其他操作不用动。<br>Collectors.groupingByConcurrent()也可以并行形式的收集，提高运算效率。<br>对于中间操作(Intermediate)，如果是无状态的API，是可以完全并行的。如果是有状态的API，即使是并行API实际也不能完全并行（or根本就不能并行？）。<br>有状态的中间操作包括：distinct() sorted() limit() skip()</p>
+<h4 id="流水线操作pipeline"><a href="#流水线操作pipeline" class="headerlink" title="流水线操作pipeline"></a>流水线操作pipeline</h4><p>集合中的元素执行完所有的函数后，下一个元素再去执行所有的函数。<br>从数学上讲，Map就会变为 x -&gt; h(g(f(x)))… 这样的一个复合函数操作，一个元素执行完复合函数，下一个元素才执行。<br>本质上是通过java.util.stream.Sink这个接口的实现类来操作的。</p>
+<h4 id="集合接口中新增的默认方法"><a href="#集合接口中新增的默认方法" class="headerlink" title="集合接口中新增的默认方法"></a>集合接口中新增的默认方法</h4><ul>
+<li><p>Iterable接口中的新增</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span></span>; <span class="comment">// 等价于Stream.forEach(action)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Collection接口中的新增</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> Stream&lt;E&gt; <span class="title">stream</span><span class="params">()</span></span>; <span class="comment">// 返回stream对象</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> Stream&lt;E&gt; <span class="title">parallelStream</span><span class="params">()</span></span>; <span class="comment">// 返回可并行的stream对象</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">removeIf</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> E&gt; filter)</span></span>; <span class="comment">// Stream.filter(predicate)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>List中的新增</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">replaceAll</span><span class="params">(UnaryOperator&lt;E&gt; operator)</span></span>; <span class="comment">// 等价于Stream.map(mapper)</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">sort</span><span class="params">(Comparator&lt;? <span class="keyword">super</span> E&gt; c)</span></span>; <span class="comment">// 等价于Stream.sorted(comparator)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Map接口中的新增</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> V <span class="title">getOrDefault</span><span class="params">(Object key, V defaultValue)</span></span>; <span class="comment">// 如果key不存在则返回给定的默认value</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(BiConsumer action)</span></span>; <span class="comment">// 等价于Stream.forEach(action)</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">replaceAll</span><span class="params">(BiFunction function)</span></span>; <span class="comment">// 等价于Stream.map(mapper)</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> V <span class="title">putIfAbsent</span><span class="params">(K key, V value)</span></span>; <span class="comment">// 如果key对应的value不存在或为null则存储k-v键值对。</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object key, Object value)</span></span>; <span class="comment">// 存在key且值为value，则移除</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> V <span class="title">replace</span><span class="params">(K key, V value)</span></span>; <span class="comment">// 如果key存在则替换，有点Stream.map(mapper)的意思</span></span><br><span class="line"><span class="function"><span class="keyword">default</span> V <span class="title">merge</span><span class="params">(K key, V value,BiFunction remappingFunction)</span></span>; <span class="comment">// 并行Stream归一时的操作</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="函数式注解"><a href="#函数式注解" class="headerlink" title="函数式注解"></a>函数式注解</h4><p>使用@FunctionalInterface注解在接口上，则该接口只能有一个未实现的接口。否则编译报错。（该注解仅作用于编译器）</p>
+<h4 id="备注"><a href="#备注" class="headerlink" title="备注"></a>备注</h4><ul>
+<li>Lambda表达式可以看做是匿名内部类的语法糖，但与匿名内部类不同；匿名内部类的this指向内部类对象，如果要指向外部类对象的话，得是外部类类名.this。</li>
+<li>如果是::进行方法引用的话，如果接口满足@FunctionalInterface注解，那么方法名可以不同。即使该接口没有被@FunctionalInterface注解。</li>
+<li>被@FunctionalInterface注解的接口只能有一个待实现的接口，特殊情况下可以不止一个，多出来的其他接口可以是Object对象本身实现的。比如boolean queals()方法。参考Comparator接口。</li>
+</ul>
+<h4 id="问答"><a href="#问答" class="headerlink" title="问答"></a>问答</h4><ul>
+<li>什么时候使用Map/Reduce这套东西呢？针对集合的操作就可以考虑。</li>
+<li>是否全是Stream而不再用原来那套？以可读性、优雅性考虑，哪个更优用哪个。</li>
+</ul>
+<h4 id="附录1-demo"><a href="#附录1-demo" class="headerlink" title="附录1.demo"></a>附录1.demo</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestFunction</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//testLazy();</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//testPipeLine();</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//testParallel();</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//testReduce();</span></span><br><span class="line">        </span><br><span class="line">        testCollectors();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//testFlatMap();</span></span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testLambda</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 匿名内部类的写法</span></span><br><span class="line">        Person person1 = <span class="keyword">new</span> Person() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="string">"a"</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">// lambda的写法，接口无参</span></span><br><span class="line">        Person person2 = () -&gt; <span class="string">"a"</span>;</span><br><span class="line">        Person person3 = () -&gt; &#123; <span class="keyword">return</span> <span class="string">"b"</span>; &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 接口一个参数</span></span><br><span class="line">        Function&lt;String, String&gt; lowerCase = (String s) -&gt; s.toLowerCase();</span><br><span class="line">        <span class="comment">// 具备类型推断的功能</span></span><br><span class="line">        Function&lt;String, String&gt; upperCase = s -&gt; s.toUpperCase();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 接口多个参数</span></span><br><span class="line">        BinaryOperator&lt;Integer&gt; maxBy = (Integer a, Integer b) -&gt; a &gt; b ? a : b;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 自身</span></span><br><span class="line">        Function&lt;Object, Object&gt; identity = Function.identity(); <span class="comment">// t -&gt; t</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testMethodReference</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Function&lt;String, Integer&gt; converter = Integer::valueOf; <span class="comment">// 类的普通方法</span></span><br><span class="line">        Supplier&lt;String&gt; generator = String::<span class="keyword">new</span>; <span class="comment">// 类的静态方法</span></span><br><span class="line">        Developer devloper = <span class="keyword">new</span> Developer();</span><br><span class="line">        Function&lt;String, String&gt; echoAddress = devloper::echoAddress; <span class="comment">// 对象的方法</span></span><br><span class="line">        Function&lt;Integer, Long&gt; squareFunction = Developer::getSquare; <span class="comment">// 类的静态方法</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testLazy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; list = Arrays.asList(<span class="string">"You"</span>, <span class="string">"are"</span>, <span class="string">"so"</span>, <span class="string">"clever"</span>, <span class="string">"!"</span>);</span><br><span class="line">        </span><br><span class="line">        list.stream().map(s -&gt; s + <span class="string">"1"</span>).peek(System.out::println);</span><br><span class="line">        </span><br><span class="line">        list.stream().map(s -&gt; s + <span class="string">"2"</span>).forEach(System.out::println);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testPipeLine</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; list = Arrays.asList(<span class="string">"You"</span>, <span class="string">"are"</span>, <span class="string">"so"</span>, <span class="string">"clever"</span>, <span class="string">"!"</span>);</span><br><span class="line">        list.stream().map(s -&gt; s + <span class="string">"1"</span>).peek(System.out::println)</span><br><span class="line">                .map(s -&gt; s + <span class="string">"2"</span>).peek(System.out::println)</span><br><span class="line">                .map(s -&gt; s + <span class="string">"3"</span>).peek(System.out::println)</span><br><span class="line">                .map(s -&gt; s + <span class="string">"4"</span>).forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testParallel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> numberSize = <span class="number">20000000</span>;</span><br><span class="line">        </span><br><span class="line">        List&lt;Long&gt; numberList = LongStream.range(<span class="number">0</span>, numberSize).mapToObj(Long::valueOf).collect(Collectors.toList());</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">"start..."</span>);</span><br><span class="line">        <span class="keyword">long</span> nanoTime1 = System.nanoTime();</span><br><span class="line">        <span class="keyword">long</span> result = numberList.stream().map(num -&gt; num*<span class="number">11</span>).map(num -&gt; num*<span class="number">13</span>).map(num -&gt; num*<span class="number">17</span>).mapToLong(Long::longValue).sum();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">long</span> nanoTime2 = System.nanoTime();</span><br><span class="line">        <span class="keyword">long</span> result2 = numberList.parallelStream().map(num -&gt; num*<span class="number">11</span>).map(num -&gt; num*<span class="number">13</span>).map(num -&gt; num*<span class="number">17</span>).mapToLong(Long::longValue).sum();</span><br><span class="line">        <span class="keyword">long</span> nanoTime3 = System.nanoTime();</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        System.out.println(nanoTime2 - nanoTime1);</span><br><span class="line">        System.out.println(nanoTime3 - nanoTime2);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testReduce</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        Stream&lt;Long&gt; longStream = LongStream.range(<span class="number">0</span>, <span class="number">100</span>).mapToObj(Long::valueOf);</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        List&lt;Long&gt; longList = longStream.collect(Collectors.toList());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// BiFunction&lt;Long,String,String&gt; a  = (x,y) -&gt; String.valueOf(x) + y;</span></span><br><span class="line">        <span class="comment">// BinaryOperator&lt;String&gt; b = (x,y) -&gt; x + y;</span></span><br><span class="line">        </span><br><span class="line">        String reduceString = longList.stream().reduce(<span class="string">""</span>, (x,y) -&gt; String.valueOf(x) + <span class="string">","</span> + y, (x,y) -&gt; x + y);</span><br><span class="line">        System.out.println(reduceString);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 使用过的stream再次使用会报错</span></span><br><span class="line">        <span class="comment">// java.lang.IllegalStateException: stream has already been operated upon or closed</span></span><br><span class="line">        <span class="comment">// long count = longStream.count();</span></span><br><span class="line">        <span class="comment">// System.out.println(count);</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// parallelStream(),可以并行，但依然保持有序</span></span><br><span class="line">        String reduceString2 = longList.parallelStream().reduce(<span class="string">""</span>, (x,y) -&gt; String.valueOf(x) + <span class="string">","</span> + y, (x,y) -&gt; x + y);</span><br><span class="line">        System.out.println(reduceString2);</span><br><span class="line">        System.out.println(reduceString.equals(reduceString2));</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 去掉初始的逗号</span></span><br><span class="line">        System.out.println(IntStream.range(<span class="number">0</span>, <span class="number">100</span>).mapToObj(String::valueOf).reduce((x,y) -&gt; x + <span class="string">","</span> + y).get());</span><br><span class="line">        System.out.println(IntStream.range(<span class="number">0</span>, <span class="number">100</span>).mapToObj(String::valueOf).collect(Collectors.joining(<span class="string">","</span>)));</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 转Map</span></span><br><span class="line">        BiFunction&lt;Map&lt;String, String&gt;,String,Map&lt;String, String&gt;&gt; a  = (x,y) -&gt;  &#123;x.put(y, y); <span class="keyword">return</span> x;&#125;;</span><br><span class="line">        BinaryOperator&lt;Map&lt;String, String&gt;&gt; b = (x,y) -&gt; &#123;x.putAll(y); <span class="keyword">return</span> x;&#125;;</span><br><span class="line">        System.out.println(IntStream.range(<span class="number">0</span>, <span class="number">100</span>).mapToObj(String::valueOf).reduce(<span class="keyword">new</span> HashMap&lt;&gt;(), a, b));</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testCollectors</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">int</span> maxDeptId = <span class="number">5</span>;</span><br><span class="line">        <span class="keyword">int</span> maxUserId = <span class="number">100</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 构造UserList，dpId随机，uId从1到100</span></span><br><span class="line">        List&lt;User&gt; userList = IntStream.rangeClosed(<span class="number">1</span>, maxUserId)</span><br><span class="line">                .mapToObj(uId -&gt; <span class="keyword">new</span> User(uId, generateRandom(maxDeptId))).collect(Collectors.toList());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 按部门Id归类，Map&lt;Integer, List&lt;User&gt;&gt;</span></span><br><span class="line">        Map&lt;Integer, List&lt;User&gt;&gt; dpId2UserList = userList.stream().collect(Collectors.groupingBy(User::getDpId));</span><br><span class="line">        System.out.println(dpId2UserList);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 按部门Id归类，Map&lt;Integer, List&lt;Integer&gt;&gt;</span></span><br><span class="line">        Map&lt;Integer, List&lt;Integer&gt;&gt; dpId2UserIdList = userList.stream()</span><br><span class="line">                .collect(Collectors.groupingBy(User::getDpId, Collectors.mapping(User::getuId, Collectors.toList())));</span><br><span class="line">        System.out.println(dpId2UserIdList);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 计算每个部门有多少人，Map&lt;Integer, Long&gt;</span></span><br><span class="line">        Map&lt;Integer, Long&gt; deptId2Count = userList.stream().collect(Collectors.groupingBy(User::getDpId, Collectors.counting()));</span><br><span class="line">        System.out.println(deptId2Count);</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        <span class="comment">// List&lt;User&gt; 转 Map&lt;Integer, String&gt;, eg: &#123;stuId,stuName&#125;这样子的map</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; uId2DeptId = userList.stream().collect(Collectors.toMap(User::getuId, User::getDpId));</span><br><span class="line">        System.out.println(uId2DeptId);</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        <span class="comment">// List&lt;User&gt;排序，按deptId从小到大，uId从大到小排序</span></span><br><span class="line">        </span><br><span class="line">        Comparator&lt;User&gt; comparator = (User user1, User user2) -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (user1.getDpId() &lt; user2.getDpId()) &#123;</span><br><span class="line">                <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (user1.getDpId() &gt; user2.getDpId()) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span>(user1.getuId() &lt; user2.getuId()) &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> <span class="keyword">if</span> (user1.getuId() &gt; user2.getuId()) &#123;</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        List&lt;User&gt; userListSorted = userList.stream().sorted(comparator).collect(Collectors.toList());</span><br><span class="line">        System.out.println(userListSorted);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testFlatMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        List&lt;Integer&gt; classIdList1 = IntStream.range(<span class="number">138001</span>, <span class="number">138015</span>).mapToObj(Integer::valueOf).collect(Collectors.toList());</span><br><span class="line">        Grade grade1 = <span class="keyword">new</span> Grade(<span class="number">1380</span>, classIdList1);</span><br><span class="line">        </span><br><span class="line">        List&lt;Integer&gt; classIdList2 = IntStream.range(<span class="number">138010</span>, <span class="number">138020</span>).mapToObj(Integer::valueOf).collect(Collectors.toList());</span><br><span class="line">        Grade grade2 = <span class="keyword">new</span> Grade(<span class="number">1382</span>, classIdList2);</span><br><span class="line">        </span><br><span class="line">        Arrays.asList(grade1, grade2).stream().flatMap(grade -&gt; grade.getClassIdList().stream()).forEach(System.out::println);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 生成一个随机数，下限是1，上限是upper</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">generateRandom</span><span class="params">(<span class="keyword">int</span> upper)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">int</span>)Math.ceil(Math.random() * upper);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/10/15/ideaConfigure/" data-toggle="tooltip" data-placement="top" title="idea的注释自定义模板">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Show All" title="Show All">Show All</a>
+                        
+                          <a class="tag" href="/tags/#idea" title="idea">idea</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://lzk123.xyz/" target="_blank">Lzk Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                        <li><a href="#" target="_blank">It Helps SEO</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "your-disqus-ID";
+    var disqus_identifier = "http://lzk123.xyz/2019/11/13/java8Function/";
+    var disqus_url = "http://lzk123.xyz/2019/11/13/java8Function/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank" href="https://www.facebook.com/lzkgithub134679">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/lzkgithub134679">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/yu-hsuan-yen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; lizhikang 2019 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://beantech.org">BeanTech</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=YenYuHsuan&repo=hexo-theme-beantech&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://lzk123.xyz/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://lzk123.xyz/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+
+</html>
