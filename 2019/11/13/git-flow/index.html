@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          Lzk Bolg
+          git-flow的分支模型 - Lzk Bolg
         
     </title>
 
-    <link rel="canonical" href="http://lzk123.xyz/archives/2/">
+    <link rel="canonical" href="http://lzk123.xyz/2019/11/13/git-flow/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -69,8 +69,8 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('/img/header_img/home-bg-2-dark.png') 
-            /*config*/
+            background-image: url('Demo.png')
+            /*post*/
         
     }
     
@@ -87,10 +87,20 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 
-                    <div class="site-heading">
-                        <h1>Lzk Blog</h1>
-                        <!--<hr class="small">-->
-                        <span class="subheading">只有坚持，才能战胜一切</span>
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Show All" title="Show All">Show All</a>
+                            
+                              <a class="tag" href="/tags/#git-flow" title="git-flow">git-flow</a>
+                            
+                        </div>
+                        <h1>git-flow的分支模型</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by lizhikang on
+                            2019-11-13
+                        </span>
                     </div>
                 
 
@@ -193,424 +203,185 @@
 
 
     <!-- Main Content -->
-    <!-- Main Content -->
-<div class="container">
-    <div class="row">
-        
+    <!-- Modify by Yu-Hsuan Yen -->
 
-<!-- USE SIDEBAR -->
-    <!-- Post Container -->
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
             <div class="
-                col-lg-8 col-lg-offset-1
-                col-md-8 col-md-offset-1
-                col-sm-12
-                col-xs-12
-                post-container
-            ">
-            
-                <!-- Main Content -->
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
 
-
-<div class="post-preview">
-
-    <a href="/2019/06/26/canal/">
-        <h2 class="post-title">
-            canal的快速搭建，和redis异步更新
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            canal基于数据库增量日志解析，提供增量数据订阅&amp;消费，目前主要支持了mysql 。canal的原理是基于mysql binlog技术，所以这里一定需要开启mysql的binlog写入功能，并且配置binlog模式为row. 
-一、下载安装并运行canal服务端
-1.下载
-https://github.com/alibaba/canal/releases   
-例:canal.de......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2019-06-26
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#canal" title="canal">canal</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/2019/06/25/mysqlStartBinLog/">
-        <h2 class="post-title">
-            MySQL 开启binlog日志
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            1.查看MySQL的binlog日志状态
-show variables like ‘%log_bin%’;
-
-2.开始MySQL的binlog日志
-在安装的MySQL路径的my.cnf的[mysqld]标签下加入;
-server_id=1log_bin = mysql-binbinlog_format = ROW
-3.重启MySQL
-必须要重启，否则不生效，然后再执行show variabl......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2019-06-25
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#数据库" title="数据库">数据库</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/2019/06/14/jdbcUtils/">
-        <h2 class="post-title">
-            JdbcTemplate和NamedParameterJdbcTemplate的区别
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            JdbcTemplate和NamedParameterJdbcTemplate的区别
-JdbcTemplate预编译位置是用”?”,NamedParameterJdbcTemplate预编译位置是用”:属性名”.
-JdbcTemplate设置参数使用的是的Object数组，NamedParameterJdbcTemplate使用的是MapSqlParameterSource
-
-NamedPa......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2019-06-14
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#jdbc" title="jdbc">jdbc</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/2019/06/12/streammap/">
-        <h2 class="post-title">
-            map集合排序
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            stream的map排序map根据key正序排序
-12map.entrySet().stream().sorted(Comparator.comparing(e-&gt;e.getKey())).forEach(System.out::println);
-map根据key倒序排序
-12map.entrySet().stream().sorted(Collections.reverseOrde......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2019-06-12
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#数据结构" title="数据结构">数据结构</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/2019/06/04/ms/">
-        <h2 class="post-title">
-            java编程思想
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            上帝赋予人类说话的能力，而言语又创造了思想，思想是人类对宇宙的量度。
-面向对象的设计方式:
-
-万物皆对象
-程序是对象的集合，它们通过发送消息来告知彼此应该做的
-每个对象都有自己的由其他对象构成的存储
-每个对象都有其类型
-某一特定类型的所有对象都可以接受同样的消息
-
-...
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2019-06-04
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#读书笔记" title="读书笔记">读书笔记</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/2017/03/18/hexo-theme-beantech/">
-        <h2 class="post-title">
-            [Hexo] Theme BeanTech
-        </h2>
-        <h3 class="post-subtitle">
-            This is hexo theme Demo.
-        </h3>
-        <div class="post-content-preview">
-            
-Ported Theme of Hux Blog, Thank Huxpro for designing such a flawless theme.
-This BeanTech theme created by YuHsuan modified from the original Porter Kaijun
-
-Live Demo
-
-Usage
-I publish the whole pr......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2017-03-18
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#Hexo" title="Hexo">Hexo</a>
-            
-              <a href="/tags/#Blog" title="Blog">Blog</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-
-
-<!-- Pager -->
-
-<ul class="pager">
-    
-        <li class="previous">
-            <a href="/">&larr; Newer Posts</a>
-        </li>
-    
-    
+                <h5 id="git的基础"><a href="#git的基础" class="headerlink" title="git的基础"></a>git的基础</h5><p><a href="https://lzkgithub134679.github.io/2019/11/13/gitMin/&quot;git的一些命令&quot;" target="_blank" rel="noopener">git的一些命令</a></p>
+<h5 id="git分支"><a href="#git分支" class="headerlink" title="git分支"></a>git分支</h5><p>在git上开分支是非常容易非常快速的事情，只需要创建一个引用指向当前的commit即可</p>
+<h5 id="git-flow"><a href="#git-flow" class="headerlink" title="git-flow"></a>git-flow</h5><p>git flow 是2010年 一个叫nvie的外国人设计的开发模型，旨在保持git仓库的优雅并且整洁。<br><a href="https://nvie.com/posts/a-successful-git-branching-model/" title="A successful Git branching model" target="_blank" rel="noopener">A successful Git branching model</a></p>
+<h5 id="git-flow-初见"><a href="#git-flow-初见" class="headerlink" title="git-flow 初见"></a>git-flow 初见</h5><p>网上广为流传的，出自上文链接中的图片：<br><img src="http://192.168.12.24/server/../Public/Uploads/2019-11-01/5dbb8bfb478cf.png" alt></p>
+<h5 id="git-flow详解"><a href="#git-flow详解" class="headerlink" title="git-flow详解"></a>git-flow详解</h5><p>由于对git-flow的模型没有深刻的认知和实践，暂不记录内容。</p>
+<h5 id="公司开发的分支模型"><a href="#公司开发的分支模型" class="headerlink" title="公司开发的分支模型"></a>公司开发的分支模型</h5><p>对git-flow的原模型进行借鉴，思考适合公司的开发模型。比如，提测后需求依然经常变更。</p>
+<ul>
+<li>master分支：init后就有，每次生产环境部署都是从master部署。（不打tag了）</li>
+<li>dev分支：init后分自master，一般不在dev上直接开发功能，经常作为feature分支与feature分支之间的沟通</li>
+<li>feature分支：分自dev，每开发一个新功能，就开辟一个新的feature分支，并且在feature分支上进行新功能的开发。期间会频繁的将dev的代码merge到自己的feature，防止将来并回dev时冲突太多。</li>
+<li>release分支：分自dev，提测的时候，开辟一个新的release分支。改Bug在此分支上进行。测试通过后，并到master分支进行生产部署。每个release的提交节点都是具备可测试的。改Bug在release节点更新后，一般会同时merge到dev分支。</li>
+</ul>
+<h5 id="备注1"><a href="#备注1" class="headerlink" title="备注1"></a>备注1</h5><ol>
+<li>feature分支如果认为功能开发完了，可以测试了，就merge到dev进行联调，并开辟release分支测试；</li>
+<li>feature会频繁的将dev的代码merge到自己，防止将来合并回dev时冲突太多；</li>
+<li>release修改Bug后一般会同时merge到dev，但是绝不能再从其他分支merge到release；</li>
+<li>如果’release-作业’正在测试，’feature-任务’开发完成需要提测，则’feature-任务’merge到dev，并开辟新的’release-作业任务’进行提测，’release-作业’分支不再关注（可以删除了的意思）；</li>
+<li>公司目前的情况，可能会同时存在两个release分支，旧的对应生产环境的代码，用来更改生产环境的Bug。新的release是用来测试的，作用同上一条；</li>
+<li>公司目前的情况，提测后需求也是会改变的。即release分支已经生效并且在测试的过程中，需求变更了。<br>6.1 如果这个变更只需要涉及到自己，不需要跟其他人配合，那就等同于Bug来处理，直接在当前release上开发。（前提是认为这个开发时间短）<br>6.2 如果这个变更需要多人配合，那就当作feature开发，然后重新打release提测。</li>
+<li>在dev分支下联调。</li>
+<li>dev分支比功能提测的release超前后，需要重新打release分支提测功能</li>
+<li>正常情况下，开发环境部署的就是dev分支，测试环境部署的是release，生产环境部署的是master</li>
+</ol>
+<h4 id="备注2"><a href="#备注2" class="headerlink" title="备注2"></a>备注2</h4><p>一些git-flow的参考文档</p>
+<ul>
+<li><a href="https://www.cnblogs.com/mark888/p/7222242.html" title="干货：基于 Git Flow 的 Git 最佳实践（附加解决大家经常碰到的问题）" target="_blank" rel="noopener">干货：基于 Git Flow 的 Git 最佳实践（附加解决大家经常碰到的问题）</a></li>
+<li><a href="https://www.cnblogs.com/cnblogsfans/p/5075073.html" title="Git 在团队中的最佳实践--如何正确使用Git Flow" target="_blank" rel="noopener">Git 在团队中的最佳实践–如何正确使用Git Flow</a></li>
+<li><a href="https://www.cnblogs.com/lcngu/p/5770288.html" title="git flow的使用" target="_blank" rel="noopener">git flow的使用</a></li>
+<li><a href="https://www.oschina.net/translate/a-successful-git-branching-model" title="介绍一个成功的 Git 分支模型" target="_blank" rel="noopener">介绍一个成功的 Git 分支模型</a></li>
+<li><a href="https://www.ituring.com.cn/article/56870" title="基于git的源代码管理模型——git flow" target="_blank" rel="noopener">基于git的源代码管理模型——git flow</a></li>
+</ul>
+<h4 id="备注3"><a href="#备注3" class="headerlink" title="备注3"></a>备注3</h4><p>记录Q&amp;A<br>1，Q: 如果碰到提测后需求有变更，后台接口升级不兼容，开feature分之后，后台开发完就可以并到dev吗？比如5人综合批的需求。<br>A: 不可以。 开feature开发完之后，讲道理是不是直接并到dev的，因为pad端开发很滞后，需要很久才能调通。而web端开发已经结束。那怎么联调呢？建议开发环境新开一台服务器，部署这个feature分支，不影响其他dev上原有接口的的代码联调。（这中间其实有一个被忽略的地方：Pad端其实尚未开发完成，不具备dev上联调的前提，所以不往dev合并）</p>
+<h4 id="备注4"><a href="#备注4" class="headerlink" title="备注4"></a>备注4</h4><ul>
+<li>对于后端接口来说，如果开发的是新接口，或者接口升级是兼容的，在feature分支上开发完成后，为方便前端调用开发，为方便前端调用开发，为方便前端调用开发，可以并到dev分支让前端直接调用开发等待联调。</li>
 </ul>
 
+                
 
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/11/13/gitMin/" data-toggle="tooltip" data-placement="top" title="git的一些命令">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
 
-                <!-- 如果开启评论功能 -->
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Show All" title="Show All">Show All</a>
+                        
+                          <a class="tag" href="/tags/#git-flow" title="git-flow">git-flow</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="http://lzk123.xyz/" target="_blank">Lzk Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                        <li><a href="#" target="_blank">It Helps SEO</a></li>
+                    
+                </ul>
                 
             </div>
-
-          <!-- Sidebar Container -->
-<div class="
-    col-lg-3 col-lg-offset-0
-    col-md-3 col-md-offset-0
-    col-sm-12
-    col-xs-12
-    sidebar-container
-">
-    
-        <!-- Featured Tags -->
-
-<section>
-    <!-- no hr -->
-    <h5><a href="/tags/">FEATURED TAGS</a></h5>
-    <div class="tags">
-        
-            
-            <a href="/tags/#Show All" title="Show All" rel="14">Show All</a>
-            
-        
-            
-            <a href="/tags/#canal" title="canal" rel="2">canal</a>
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#idea" title="idea" rel="2">idea</a>
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-            <a href="/tags/#读书笔记" title="读书笔记" rel="2">读书笔记</a>
-            
-        
-            
-        
+        </div>
     </div>
-</section>
+</article>
 
-        <hr>
-    
-        <!-- Short About -->
-<section class="visible-md visible-lg">
-    <h5><a href="/about/">ABOUT ME</a></h5>
-    <div class="short-about">
 
-        
-            <img id = "avatar_pic" src="/img/ironman-draw.png" />
-        
 
-        
-            <p>Hi, i&#39;m John Doe</p>
-        
 
-        <!-- SNS Link -->
-        <ul class="list-inline">
-            
-            
-            
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "your-disqus-ID";
+    var disqus_identifier = "http://lzk123.xyz/2019/11/13/git-flow/";
+    var disqus_url = "http://lzk123.xyz/2019/11/13/git-flow/";
 
-            
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
 
-            
-                <li>
-                    <a target="_blank" href="https://www.facebook.com/lzkgithub134679">
-                        <span class="fa-stack fa-lg">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
-                        </span>
-                    </a>
-                </li>
-            
 
-            
-                <li>
-                    <a target="_blank"  href="https://github.com/lzkgithub134679">
-                        <span class="fa-stack fa-lg">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                        </span>
-                    </a>
-                </li>
-            
-            
-            
-            
-                <li>
-                    <a target="_blank"  href="https://www.linkedin.com/in/yu-hsuan-yen">
-                        <span class="fa-stack fa-lg">
-                            <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
-                        </span>
-                    </a>
-                </li>
-            
-        </ul>
-    </div>
-</section>
-        <hr>
-    
-        
-  <h5>RECENT POSTS</h3>
-  <div class="widget">
-    <ul>
-      
-        <li>
-          <a href="/2019/11/13/git-flow/">git-flow的分支模型</a>
-        </li>
-      
-        <li>
-          <a href="/2019/11/13/gitMin/">git的一些命令</a>
-        </li>
-      
-        <li>
-          <a href="/2019/11/13/java8Function/">Map/Reduce 及Java8的Function和Stream</a>
-        </li>
-      
-        <li>
-          <a href="/2019/10/15/ideaConfigure/">idea的注释自定义模板</a>
-        </li>
-      
-        <li>
-          <a href="/2019/08/15/as/">在项目启动后自动执行方法</a>
-        </li>
-      
-    </ul>
-  </div>
 
-        <hr>
-    
-        <!-- Friends Blog -->
 
-<h5>FRIENDS</h5>
-<ul class="list-inline">
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
 
-    
-        <li><a href="http://lzk123.xyz/" target="_blank">Lzk Blog</a></li>
-    
-        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
-    
-        <li><a href="#" target="_blank">It Helps SEO</a></li>
-    
-</ul>
-
-        <hr>
-    
-</div>
-
-        
-    </div>
-</div>
 
 
     <!-- Footer -->
