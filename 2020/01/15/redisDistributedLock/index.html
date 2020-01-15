@@ -15,11 +15,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          java 自定义注解的学习和使用 - Lzk Bolg
+          redisDistributedLock - Lzk Bolg
         
     </title>
 
-    <link rel="canonical" href="xiaopingzi.vip/2019/06/28/custom-annotations/">
+    <link rel="canonical" href="xiaopingzi.vip/2020/01/15/redisDistributedLock/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -93,14 +93,14 @@
                             
                               <a class="tag" href="/tags/#Show All" title="Show All">Show All</a>
                             
-                              <a class="tag" href="/tags/#annotation" title="annotation">annotation</a>
+                              <a class="tag" href="/tags/#redis" title="redis">redis</a>
                             
                         </div>
-                        <h1>java 自定义注解的学习和使用</h1>
+                        <h1>redisDistributedLock</h1>
                         <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by lizhikang on
-                            2019-06-28
+                            2020-01-15
                         </span>
                     </div>
                 
@@ -217,24 +217,49 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h3 id="一、注解说明"><a href="#一、注解说明" class="headerlink" title="一、注解说明"></a>一、注解说明</h3><p>Java注解又称Java标注，是Java语言5.0版本开始支持加入源代码的特殊语法元数据。为我们在代码中添加信息提供了一种形式化的方法，使我们可以在稍后某个时刻非常方便的使用这些数据。<br>Java语言中的类、方法、变量、参数和包等都可以被标注。和Javadoc不同，Java标注可以通过反射获取注解内容。在编译器生成类文件时，注解可以被嵌入到字节码中。Java虚拟机可以保留注解内容，在运行时可以获取到注解内容。</p>
-<h3 id="二、注解介绍"><a href="#二、注解介绍" class="headerlink" title="二、注解介绍"></a>二、注解介绍</h3><p>1、JDK1.5版本内置了三种标准注解:</p>
+                <h2 id="什么是分布式锁"><a href="#什么是分布式锁" class="headerlink" title="什么是分布式锁"></a>什么是分布式锁</h2><p>在以往的单机系统中，对一些并发场景读取公共资源时如扣库存，卖车票之类的需求可以简单的使用同步或者是加锁就可以实现。<br>但是应用分布式了之后系统由以前的<strong>单进程多线程</strong>的程序变为了<strong>多进程多线程</strong>，这时使用以上的解决方案明显就不够了。<br>因此因此业界常用的解决方案通常是借助于一个第三方组件并利用它自身的排他性来达到多进程的互斥。如：</p>
 <ul>
-<li>@Override：表示当前的方法定义将覆盖父类中的方法。</li>
-<li>@Deprecated ：表示被弃用的代码。</li>
-<li>@SuppressWarnings：关闭对当前的代码的警告。</li>
+<li>基于数据库的乐观锁</li>
+<li>基于ZooKeeper的分布式锁</li>
+<li>基于Redis的分布式锁<br>这里主要基于 Redis 进行讨论。</li>
 </ul>
-<p>2、在java.lang.annotation：中还有四种注解。通常经常自己定义注解使用，都会用到。</p>
+<h2 id="Redis分布式锁应该满足哪些条件"><a href="#Redis分布式锁应该满足哪些条件" class="headerlink" title="Redis分布式锁应该满足哪些条件"></a>Redis分布式锁应该满足哪些条件</h2><p>首先，为了确保分布式锁可用，我们至少要确保锁的实现同时满足以下四个条件：</p>
 <ul>
-<li>@Retention：表示需要在什么级别保存该注解信息</li>
-<li>@Documented：将注解包含在Javadoc中</li>
-<li>@Target：表示该注解可以用于什么地方</li>
-<li>@Inherited：允许子类继承父类中的注解</li>
+<li>互斥性。在任意时刻，只有一个客户端能持有锁。</li>
+<li>不会发生死锁。即使有一个客户端在持有锁的期间崩溃而没有主动解锁，也能保证后续其他客户端能加锁。</li>
+<li>具有容错性。只要大部分的Redis节点正常运行，客户端就可以加锁和解锁。</li>
+<li>解铃还须系铃人。加锁和解锁必须是同一个客户端，客户端自己不能把别人加的锁给解了。</li>
 </ul>
-<p>@Retention可选参数有：</p>
-<p><code>SOURCE</code>：注解将被编译器丢弃<br><code>CLASS</code>：注解在class文件中可用，但会被VM丢弃<br><code>RUNTIME</code>：VM将在运行期间保留注解，因此可以通过反射机制读取注解的信息</p>
-<p>@Targer：可选参数有：</p>
-<p><code>CONSTRUCTOR</code>：构造器的声明<br><code>FIELD</code>：域声明（包括<code>enum</code>实例）<br><code>LOCAL_VARIABLE</code>：局部变量声明<br><code>METHOD</code>：方法声明<br><code>PACKAGE</code>：包声明<br><code>PARAMETER</code>：参数声明<br><code>TYPE</code>：类、接口（包括注解类型）或<code>enum</code>声明</p>
+<h2 id="Redis命令"><a href="#Redis命令" class="headerlink" title="Redis命令"></a>Redis命令</h2><h3 id="SETNX-key-value"><a href="#SETNX-key-value" class="headerlink" title="SETNX key value"></a>SETNX key value</h3><p>只在键 key 不存在的情况下， 将键 key 的值设置为 value 。<br>若键 key 已经存在， 则 SETNX 命令不做任何动作。<br>SETNX 是『SET if Not eXists』(如果不存在，则 SET)的简写。</p>
+<ul>
+<li>返回值<br>命令在设置成功时返回 1 ， 设置失败时返回 0 。</li>
+</ul>
+<h3 id="Jedis-evel"><a href="#Jedis-evel" class="headerlink" title="Jedis evel()"></a>Jedis evel()</h3><p>eval()方法是将Lua代码交给Redis服务端执行<br>EVAL script numkeys key [key …] arg [arg …]</p>
+<ul>
+<li>numkeys 参数用于指定键名参数的个数。</li>
+<li>键名参数 key [key …] 从 EVAL 的第三个参数开始算起，表示在脚本中所用到的那些 Redis 键(key)，</li>
+<li>这些键名参数可以在 Lua 中通过全局变量 KEYS 数组，用 1 为基址的形式访问( KEYS[1] ， KEYS[2] ，以此类推)。</li>
+<li>在命令的最后，那些不是键名参数的附加参数 arg [arg …] ，可以在 Lua 中通过全局变量 ARGV 数组访问，</li>
+<li>访问的形式和 KEYS 变量类似( ARGV[1] 、 ARGV[2] ，诸如此类)。<br>简单来说，就是在eval命令执行Lua代码的时候，Lua代码将被当成一个命令去执行，并且直到eval命令执行完成，Redis才会执行其他命令。确保原子性。</li>
+</ul>
+<h3 id="在-Lua-脚本中，可以使用两个不同函数来执行-Redis-命令，它们分别是：redis-call-redis-pcall"><a href="#在-Lua-脚本中，可以使用两个不同函数来执行-Redis-命令，它们分别是：redis-call-redis-pcall" class="headerlink" title="在 Lua 脚本中，可以使用两个不同函数来执行 Redis 命令，它们分别是：redis.call(),redis.pcall()"></a>在 Lua 脚本中，可以使用两个不同函数来执行 Redis 命令，它们分别是：redis.call(),redis.pcall()</h3><p>这两个函数的唯一区别在于它们使用不同的方式处理执行命令所产生的错误。<br>redis.call()<br>当 redis.call() 在执行命令的过程中发生错误时，脚本会停止执行，并返回一个脚本错误，错误的输出信息会说明错误造成的原因。<br>redis.pcall()<br>redis.pcall() 出错时并不引发(raise)错误，而是返回一个带 err 域的 Lua 表(table)，用于表示错误</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><h3 id="加锁"><a href="#加锁" class="headerlink" title="加锁"></a>加锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisTool</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LOCK_SUCCESS = <span class="string">"OK"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SET_IF_NOT_EXIST = <span class="string">"NX"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SET_WITH_EXPIRE_TIME = <span class="string">"PX"</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 尝试获取分布式锁</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> jedis Redis客户端</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> lockKey 锁</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> requestId 请求标识</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> expireTime 超期时间</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 是否获取成功</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">tryGetDistributedLock</span><span class="params">(Jedis jedis, String lockKey, String requestId, <span class="keyword">int</span> expireTime)</span> </span>&#123;</span><br><span class="line">        String result = jedis.set(lockKey, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, expireTime);</span><br><span class="line">        <span class="keyword">if</span> (LOCK_SUCCESS.equals(result)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，我们加锁就一行代码：jedis.set(String key, String value, String nxxx, String expx, int time)，这个set()方法一共有五个形参：</p>
+<ul>
+<li>第一个为key，我们使用key来当锁，因为key是唯一的。</li>
+<li>第二个为value，我们传的是requestId，很多童鞋可能不明白，有key作为锁不就够了吗，为什么还要用到value？原因就是我们在上面讲到可靠性时，分布式锁要满足第四个条件解铃还须系铃人，通过给value赋值为requestId，我们就知道这把锁是哪个请求加的了，在解锁的时候就可以有依据。requestId可以使用UUID.randomUUID().toString()方法生成。</li>
+<li>第三个为nxxx，这个参数我们填的是NX，意思是SET IF NOT EXIST，即当key不存在时，我们进行set操作；若key已经存在，则不做任何操作；</li>
+<li>第四个为expx，这个参数我们传的是PX，意思是我们要给这个key加一个过期的设置，具体时间由第五个参数决定。</li>
+<li>第五个为time，与第四个参数相呼应，代表key的过期时间。</li>
+</ul>
+<p>总的来说，执行上面的set()方法就只会导致两种结果：1. 当前没有锁（key不存在），那么就进行加锁操作，并对锁设置个有效期，同时value表示加锁的客户端。2. 已有锁存在，不做任何操作。</p>
+<p>心细的童鞋就会发现了，我们的加锁代码满足我们可靠性里描述的三个条件。首先，set()加入了NX参数，可以保证如果已有key存在，则函数不会调用成功，也就是只有一个客户端能持有锁，满足互斥性。其次，由于我们对锁设置了过期时间，即使锁的持有者后续发生崩溃而没有解锁，锁也会因为到了过期时间而自动解锁（即key被删除），不会发生死锁。最后，因为我们将value赋值为requestId，代表加锁的客户端请求标识，那么在客户端在解锁的时候就可以进行校验是否是同一个客户端。由于我们只考虑Redis单机部署的场景，所以容错性我们暂不考虑。</p>
+<p>错误方式：</p>
+<ul>
+<li>使用setnx() 和 expire()，但并没有线程同步或加锁保证这两个操作的原子性。<br>setnx() 之后如果突然崩溃导致没有执行expire()，会导致死锁。</li>
+</ul>
+<h2 id="解锁"><a href="#解锁" class="headerlink" title="解锁"></a>解锁</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisTool</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Long RELEASE_SUCCESS = <span class="number">1L</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 释放分布式锁</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> jedis Redis客户端</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> lockKey 锁</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> requestId 请求标识</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 是否释放成功</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">releaseDistributedLock</span><span class="params">(Jedis jedis, String lockKey, String requestId)</span> </span>&#123;</span><br><span class="line">        String script = <span class="string">"if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end"</span>;</span><br><span class="line">        Object result = jedis.eval(script, Collections.singletonList(lockKey), Collections.singletonList(requestId));</span><br><span class="line">        <span class="keyword">if</span> (RELEASE_SUCCESS.equals(result)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="我们的实现还有什么问题么？"><a href="#我们的实现还有什么问题么？" class="headerlink" title="我们的实现还有什么问题么？"></a>我们的实现还有什么问题么？</h2><p>考虑由于A服务器执行时间过长，导致锁失效，从而使得B服务器获取到了锁，对同一个key执行了相同的逻辑。<br>首先，需要确认的是，以上的情况发生概率很低，如果你的系统并发量不大，业务逻辑不复杂的话，基本上很难遇到这个者A、B服务器都对同一个key执行业务逻辑的问题。</p>
 
                 
 
@@ -242,13 +267,9 @@
                 <!-- Pager -->
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2019/06/28/dmzj/" data-toggle="tooltip" data-placement="top" title="《代码整洁之道》读书笔记一">&larr; Previous Post</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2019/06/26/advancedCanal/" data-toggle="tooltip" data-placement="top" title="canal进阶，和springBoot整合,实现注解异步更新redis">Next Post &rarr;</a>
+                            <a href="/2020/01/14/ip/" data-toggle="tooltip" data-placement="top" title="IP协议">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -289,7 +310,7 @@
                        
                           <a class="tag" href="/tags/#Show All" title="Show All">Show All</a>
                         
-                          <a class="tag" href="/tags/#annotation" title="annotation">annotation</a>
+                          <a class="tag" href="/tags/#redis" title="redis">redis</a>
                         
                     </div>
                 </section>
@@ -318,8 +339,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "your-disqus-ID";
-    var disqus_identifier = "xiaopingzi.vip/2019/06/28/custom-annotations/";
-    var disqus_url = "xiaopingzi.vip/2019/06/28/custom-annotations/";
+    var disqus_identifier = "xiaopingzi.vip/2020/01/15/redisDistributedLock/";
+    var disqus_url = "xiaopingzi.vip/2020/01/15/redisDistributedLock/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

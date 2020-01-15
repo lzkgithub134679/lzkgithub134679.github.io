@@ -137,14 +137,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -211,6 +211,40 @@
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/2020/01/15/redisDistributedLock/">
+        <h2 class="post-title">
+            redisDistributedLock
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            什么是分布式锁在以往的单机系统中，对一些并发场景读取公共资源时如扣库存，卖车票之类的需求可以简单的使用同步或者是加锁就可以实现。但是应用分布式了之后系统由以前的单进程多线程的程序变为了多进程多线程，这时使用以上的解决方案明显就不够了。因此因此业界常用的解决方案通常是借助于一个第三方组件并利用它自身的排他性来达到多进程的互斥。如：
+
+基于数据库的乐观锁
+基于ZooKeeper的分布式锁
+基于R......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by lizhikang on
+            2020-01-15
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#Show All" title="Show All">Show All</a>
+            
+              <a href="/tags/#redis" title="redis">redis</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -501,36 +535,6 @@ Github 地址：https://github.com/PanJiaChen/vue-......
 </div>
 <hr>
 
-<div class="post-preview">
-
-    <a href="/2019/06/28/custom-annotations/">
-        <h2 class="post-title">
-            java 自定义注解的学习和使用
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            一、注解说明Java注解又称Java标注，是Java语言5.0版本开始支持加入源代码的特殊语法元数据。为我们在代码中添加信息提供了一种形式化的方法，使我们可以在稍后某个时刻非常方便的使用这些数据。Java语言中的类、方法、变量、参数和包等都可以被标注。和Javadoc不同，Java标注可以通过反射获取注解内容。在编译器生成类文件时，注解可以被嵌入到字节码中。Java虚拟机可以保留注解内容，在......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by lizhikang on
-            2019-06-28
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#Show All" title="Show All">Show All</a>
-            
-              <a href="/tags/#annotation" title="annotation">annotation</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
 
 
 <!-- Pager -->
@@ -567,7 +571,7 @@ Github 地址：https://github.com/PanJiaChen/vue-......
     <div class="tags">
         
             
-            <a href="/tags/#Show All" title="Show All" rel="15">Show All</a>
+            <a href="/tags/#Show All" title="Show All" rel="16">Show All</a>
             
         
             
@@ -592,6 +596,8 @@ Github 地址：https://github.com/PanJiaChen/vue-......
         
             
             <a href="/tags/#idea" title="idea" rel="2">idea</a>
+            
+        
             
         
             
@@ -672,6 +678,10 @@ Github 地址：https://github.com/PanJiaChen/vue-......
     <ul>
       
         <li>
+          <a href="/2020/01/15/redisDistributedLock/">redisDistributedLock</a>
+        </li>
+      
+        <li>
           <a href="/2020/01/14/ip/">IP协议</a>
         </li>
       
@@ -685,10 +695,6 @@ Github 地址：https://github.com/PanJiaChen/vue-......
       
         <li>
           <a href="/2019/11/13/java8Function/">Map/Reduce 及Java8的Function和Stream</a>
-        </li>
-      
-        <li>
-          <a href="/2019/10/15/ideaConfigure/">idea的注释自定义模板</a>
         </li>
       
     </ul>
