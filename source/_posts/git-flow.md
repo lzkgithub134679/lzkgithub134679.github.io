@@ -19,7 +19,7 @@ git flow 是2010年 一个叫nvie的外国人设计的开发模型，旨在保�
 
 ##### git-flow 初见
 网上广为流传的，出自上文链接中的图片：
-![](http://192.168.12.24/server/../Public/Uploads/2019-11-01/5dbb8bfb478cf.png)
+![](5dbb8bfb478cf.png)
 
 ##### git-flow详解
 由于对git-flow的模型没有深刻的认知和实践，暂不记录内容。
